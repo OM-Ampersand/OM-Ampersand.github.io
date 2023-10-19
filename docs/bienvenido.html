@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Principal</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Iniciar Sesión</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="stylesb.css">
 </head>
-<body>
+<body background="/img/fondo5.jpg">
 
-<div class="container">
     <style>
         body{
             background-image: url(/img/fondo5.jpg);
@@ -23,32 +21,17 @@
             background-size: 1600px 1200px;
         }
     </style>
-    <h1>Página Principal</h1>
-    <style>
-        h1{
-            margin: 30px;
-        }
-    </style>
 
+    <div class="container">
 
-    <div class="button-container">
-        <div class="button-group">
-            <button onclick="irAlmacen()" class="special-button">
-                <img src="/img/shopping-store.png" alt="Almacén">
-                Almacén
+        <div class="image-section">
+            <img src="/docs/img/OM-Moda.jpg" alt="Imagen de Bienvenida">
+            <button onclick="Comenzar()">
+                <img src="/docs/img/Comenzar.png" alt="Volver">
             </button>
-            
-            <button onclick="irSucursales()" class="special-button">
-                <img src="/img/bags-bucket.png" alt="Sucursales">
-                Sucursales
-            </button>            
         </div>
 
-        <button onclick="CerrarSesion()" class="normal-button">
-            Cerrar Sesión
-        </button>
     </div>
-</div>
 
     <script src="script.js"></script>
 </body>

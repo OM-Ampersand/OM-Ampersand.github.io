@@ -25,7 +25,11 @@ function CerrarSesion() {
 }
 
 function VolverAtras() {
-    window.location.href = "bienvenido.html";
+    window.location.href = "menu.html";
+}
+
+function Comenzar() {
+    window.location.href = "menu.html";
 }
 
 

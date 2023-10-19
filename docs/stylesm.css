@@ -1,0 +1,87 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Asegura que el contenedor ocupe el 100% de la altura de la ventana */
+}
+
+
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0px; /* Espacio entre el grupo de botones y el botón "Cerrar Sesión" */
+    }
+
+    .special-button {
+        font-size: 18px;
+        font-weight: bold;
+        font-family: 'Montserrat', sans-serif;
+        color: rgb(148, 220, 251); 
+        width: 200px;
+        height: 230px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 10px;
+        border: none;
+        border-radius: 10px;
+        background-color: rgb(255, 255, 255);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .special-button img {
+        max-width: 80%;
+        max-height: 80%;
+        margin-bottom: 5px; /* Añade un espacio entre la imagen y el texto */
+    }
+    
+    .normal-button {
+        background-color: rgb(72, 195, 248);
+        border-radius: 10px; /* Redondea el botón */
+        font-size: 15px; /* Aumenta el tamaño del texto */
+        margin: 10px;
+        color: rgb(255, 255, 255); /* Color del texto */
+        font-family: 'Montserrat', sans-serif;
+        border: 10px solid rgb(72, 195, 248);
+    }
+
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+        text-align: center;
+        font-size: large;
+    }
+
+
+    input {
+        background-color:  rgb(200, 238, 254);
+        border: 7px solid rgb(200, 238, 254);
+        border-radius: 10px;
+        margin: 10px;
+        width: 300px; /* Ajusta el ancho según tus preferencias */
+        padding: 8px; /* Ajusta el relleno (padding) según tus preferencias */
+    }
+
+    .custom-icon { /* Cambia 'ruta_de_tu_imagen.png' por la ruta de tu imagen */
+        background-size: 75%; /* Ajusta el tamaño de la imagen según el botón */
+        background-repeat: no-repeat; /* Evita la repetición de la imagen */
+        background-position: center top; /* Centra la imagen en el botón */
+        padding-top: 140px; /* Ajusta el espacio entre la imagen y el texto */
+        text-align: center; /* Asegura que el texto esté centrado */
+    }
+
+    .custom-icon2 { /* Cambia 'ruta_de_tu_imagen.png' por la ruta de tu imagen */
+        background-size: 75%; /* Ajusta el tamaño de la imagen según el botón */
+        background-repeat: no-repeat; /* Evita la repetición de la imagen */
+        background-position: center top; /* Centra la imagen en el botón */
+        padding-top: 140px; /* Ajusta el espacio entre la imagen y el texto */
+        text-align: center; /* Asegura que el texto esté centrado */
+    }
