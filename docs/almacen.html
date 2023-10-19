@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Inventarios</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="stylesa.css">
+</head>
+
+<body background="/img/fondo7.jpg">
+
+    <style>
+        body{
+            background-image: url(/img/fondo7.jpg);
+            background-repeat: repeat;
+            background-size: 1600px 1200px;
+        }
+    </style>
+    
+    <div class="tabs">
+        <button onclick="VolverAtras()">
+            <img src="/img/back2.png" alt="Volver">
+        </button>
+
+        <div class="tab" onclick="mostrarContenido('Inventario')">
+            <img src="/img/store.png" alt="A">
+        </div>   
+
+        <div class="tab" onclick="mostrarContenido('Nuevo')">
+            <img src="/img/add.png" alt="N">
+        </div>
+
+        <div class="tab" onclick="mostrarContenido('Editar')">
+            <img src="/img/code.png" alt="E">
+        </div>
+
+        <div class="tab" onclick="mostrarContenido('Buscar')">
+            <img src="/img/window.png" alt="L">
+        </div>
+
+        <div class="tab" onclick="mostrarContenido('Modificar')">
+            <img src="/img/cogwheels.png" alt="C">
+        </div>
+        <!-- ... Otros botones ... -->
+    </div>
+    
+    <div id="InventarioTab" class="tab-container contenido-tab">
+            <h1>Almacen</h1>
+        <table id="inventario">
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Sección</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Código</th>
+                <th>Acciones</th>
+            </tr>
+        </table>
+    </div>
+    
+
+    <div id="NuevoTab" class="new-container contenido-tab" style="display:none;">
+            <h1>Nuevo Producto</h1>
+        <form id="formulario">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" required><br>
+
+            <label for="descripcion">Descripción:</label>
+            <input type="text" id="descripcion" required><br>
+
+            <label for="seccion">Sección:</label>
+            <input type="text" id="seccion" required><br>
+
+            <label for="precio">Precio:</label>
+            <input type="number" id="precio" required><br>
+
+            <label for="stock">Stock:</label>
+            <input type="number" id="stock" required><br>
+        
+            <button class="boton-primario" type="button" onclick="agregarProducto()">Agregar Producto</button>
+        </form>
+    </div>
+
+    <div id="EditarTab" class="edit-container contenido-tab" style="display:none;">
+        <h1>Editar Producto</h1>    <!-- Botón para buscar producto por código -->
+        <label for="codigoProducto">Código del Producto:</label>
+        <input type="text" id="codigoProducto">
+        <button class="boton-primario" onclick="buscarProducto()">Siguiente</button>
+        
+        <!-- Interfaz de modificación (inicialmente oculta) -->
+        <div id="modificarProducto" style="display:none;">
+            <h2>Modificar Producto</h2>
+            <label for="nombreMod">Nombre:</label>
+            <input type="text" id="nombreMod"><br>
+            
+            <label for="descripcionMod">Descripción:</label>
+            <input type="text" id="descripcionMod"><br>
+            
+            <label for="seccionMod">Sección:</label>
+            <input type="text" id="seccionMod"><br>
+            
+            <label for="precioMod">Precio:</label>
+            <input type="text" id="precioMod"><br>
+            
+            <label for="stockMod">Stock:</label>
+            <input type="text" id="stockMod"><br>
+            
+            <!-- Botones de Aceptar y Cancelar -->
+            <button class="boton-primario" onclick="confirmarModificacion()">Aceptar</button>
+            <button class="boton-primario" onclick="cancelarModificacion()">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="BuscarTab" class="look-container contenido-tab" style="display:none;">
+        <h1>Buscar Producto</h1>
+    <!-- Elementos de búsqueda -->
+        <label for="busqueda">Buscar por:</label>
+        <select id="criterio">
+            <option value="nombre">Nombre</option>
+            <option value="descripcion">Descripción</option>
+            <option value="seccion">Sección</option>
+            <option value="precio">Precio</option>
+            <option value="stock">Stock</option>
+            <option value="codigo">Código</option>
+        </select>
+        <input type="text" id="busqueda">
+        <button class="boton-primario" onclick="buscarProductos()">Buscar</button>
+
+        <!-- Resultados de búsqueda -->
+        <h2>Resultados de Búsqueda</h2>
+        <div id="resultados"></div>
+    </div>
+
+    <div id="ModificarTab" class="mod-container contenido-tab" style="display:none;">
+        <h1>Modificar Stock</h1>
+    <form id="modificarStock">
+        <label for="codigoStock">Código:</label>
+        <input type="text" id="codigoStock" required><br>
+
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" id="cantidad" required><br>
+
+        <button type="button" class="boton-primario" onclick="sumarStock()">Sumar Stock</button>
+        <button type="button" class="boton-primario" onclick="restarStock()">Restar Stock</button>
+    </form>
+<!-- ... (código anterior) ... -->
+    </div>
+    
+           <!-- Contenido de la pestaña "Sucursales" -->
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+/* ------------- Generales --------------- */
+.boton-secundario {
+    background-color: rgb(221, 144, 252);
+    border-radius: 10px; /* Redondea el botón */
+    font-size: 15px; /* Aumenta el tamaño del texto */
+    margin: 10px;
+    color: rgb(255, 255, 255); /* Color del texto */
+    font-family: 'Montserrat', sans-serif;
+    border: 10px solid rgb(221, 144, 252);
+}
+
+input {
+    background-color:  rgb(240, 221, 247);
+    border: 5px solid rgb(240, 221, 247);
+    border-radius: 5px;
+    margin: 10px;
+    width: 290px; /* Ajusta el ancho según tus preferencias */
+    padding: 8px; /* Ajusta el relleno (padding) según tus preferencias */
+}
+
+label {
+    font-size: 15px; /* Cambia el tamaño de la fuente */
+    display: block; /* Hace que la etiqueta aparezca en una nueva línea */
+    margin-bottom: 0px; /* Añade un espacio entre la etiqueta y el campo de entrada */
+    text-align: left; /* Alinea el texto de la etiqueta a la izquierda */
+    padding-left: 40px; /* Añade una sangría de 10 píxeles en el lado izquierdo */
+}
+
+button{
+    background-color: rgba(255, 4, 88, 0);
+}
+
+.tabs button {
+    background: none; /* Elimina el fondo */
+    border: none; /* Elimina el borde */
+    padding: 0; /* Elimina el espacio interior */
+    cursor: pointer; /* Cambia el cursor a un puntero */
+    margin-right: 15px; /* Elimina el margen */
+}
+
+.tabs button img {
+    width: 30px; /* Modifica el ancho del icono */
+    height: 30px; /* Modifica la altura del icono */
+}
+
+.tabs {
+    display: flex;
+    justify-content: flex-end; /* Alinea las pestañas a la derecha */
+    margin: 20px;
+}
+
+.tab img {
+    cursor: pointer;
+    padding: 0px 0px;
+    max-width: 50px;
+    max-height: 50px;
+    background-color: rgba(255, 255, 255, 0.687);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 1px;
+    border: none;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+.contenido-tab {
+    margin: 0 1cm; /* Margen de 1cm entre izquierda y derecha */
+    text-align: center; /* Centra el contenido */
+}
+
+/* ------------- Generales --------------- */
+
+/* ------------- Añadir Sucursal --------------- */
+.add-container {
+    width: 400px;
+    height: 260px;
+    margin: 0 auto; /* Esto centra el contenedor horizontalmente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(255, 255, 255); /* Fondo blanco semitransparente */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px; /* Esquinas redondeadas */
+    padding: 10px; /* Espaciado interno */
+}
+/* ------------- Añadir Sucursal --------------- */
+
+/* ------------- Sucursales --------------- */
+.suc-container {
+    width: 1400px;
+    margin: 5px auto;
+    background-color: rgb(255, 255, 255); /* Fondo blanco semitransparente */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px; /* Esquinas redondeadas */
+    padding: 10px; /* Espaciado interno */
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    overflow: hidden; /* Oculta el desbordamiento de los bordes redondeados */
+}
+
+th {
+    background-color: #DE90FC; /* Color de la fila superior */
+    color: #ffffff; /* Cambia el color del texto de la fila superior */
+    font-weight: bold; /* Hace más grueso el texto en las celdas */
+}
+
+tr:nth-child(even) {
+    background-color: #F0DDF7; /* Color de fondo de las filas pares */
+}
+
+th, td {
+    font-size: 15px; /* Tamaño de la letra en las celdas */
+    text-align: center; /* Centra el texto de las celdas */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table, th, td {
+    border: 1px solid rgb(255, 255, 255);
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+/* ------------- Sucursales --------------- */
+
+/* ------------- Editar Sucursales --------------- */
+.editsuc-container {
+    width: 400px;
+    height: 250px;
+    margin: 0 auto; /* Esto centra el contenedor horizontalmente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(255, 255, 255); /* Fondo blanco semitransparente */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px; /* Esquinas redondeadas */
+    padding: 10px; /* Espaciado interno */
+}
+
+.boton-terciario {
+    background-color: rgb(203, 59, 255);
+    border-radius: 10px;
+    font-size: 15px;
+    margin: 1px;
+    color: rgb(255, 255, 255);
+    font-family: 'Montserrat', sans-serif;
+    border: 5px solid rgb(203, 59, 255);
+    width: 35px;
+}
+
+.boton-cuaternario {
+    background-color: rgb(225, 144, 255);
+    border-radius: 10px;
+    font-size: 10px;
+    margin: 1px;
+    color: rgb(255, 255, 255);
+    font-family: 'Montserrat', sans-serif;
+    border: 15px solid rgb(225, 144, 255);
+}
+
+#EditarSTab select {
+    display: inline-block;
+    vertical-align: middle; /* Alinea verticalmente los elementos */
+}
+
+#EditarSTab select {
+    background-color:  #F0DDF7;
+    border: 5px solid #F0DDF7;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 320px; /* Ajusta el ancho según tus preferencias */
+    padding: 8px; /* Ajusta el relleno (padding) según tus preferencias */
+}
+/* ------------- Editar Sucursales --------------- */
+
+#criterio{
+    background-color: rgba(246, 232, 188, 0.816) ;
+}
+
+#selectSucursales{
+    background-color: rgba(246, 232, 188, 0.816) ;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    font-size: large;
+}
+
+/* styles.css */
+
+.oculto {
+    display: none;
+    display: block;
+}
+
+.formulario, .gestion-stock, .tabla-inventario {
+    margin: 20px;
+}
+
+
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table, th, td {
+    border: 1px solid rgb(255, 255, 255);
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+
+
+
+

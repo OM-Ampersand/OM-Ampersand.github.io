@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Inventarios</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styless.css">
+</head>
+
+<body background="/img/fondo7.jpg">
+
+    <style>
+        body{
+            background-image: url(/img/fondo7.jpg);
+            background-repeat: repeat;
+            background-size: 1600px 1200px;
+        }
+    </style>
+
+    <div class="tabs">
+        <button onclick="VolverAtras()">
+            <img src="/img/back2.png" alt="Volver">
+        </button>
+
+        <div class="tab" onclick="mostrarContenido('InventarioS')">
+            <img src="/img/store.png" alt="I">
+        </div>  
+        
+        <div class="tab" onclick="mostrarContenido('AñadirS')">
+            <img src="/img/add.png" alt="A">
+        </div>
+
+        <div class="tab" onclick="mostrarContenido('Sucursales')">
+            <img src="/img/hotel.png" alt="S">
+        </div>
+
+        <div class="tab" onclick="mostrarContenido('EditarS')">
+            <img src="/img/code.png" alt="E">
+        </div>    
+    </div>
+
+    <!-- ... (Por Borrar) ... -->
+
+    <div id="InventarioSTab" class="contenido-tab">
+        <h2>Inventario</h2>
+    <form id="formulario">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" required><br>
+
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="descripcion" required><br>
+
+        <label for="seccion">Sección:</label>
+        <input type="text" id="seccion" required><br>
+
+        <label for="precio">Precio:</label>
+        <input type="number" id="precio" required><br>
+
+        <label for="stock">Stock:</label>
+        <input type="number" id="stock" required><br>
+
+        <button class="boton-secundario" type="button" onclick="agregarProducto()">Agregar Producto</button>
+    </form>
+
+        <h2>Inventario</h2>
+    <table id="inventario">
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Sección</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Código</th>
+            <th>Acciones</th>
+        </tr>
+    </table>
+    </div>
+
+    <!-- ... (Por Borrar) ... -->
+
+    <!-- ... (Añadir Sucursales) ... -->
+    <div id="AñadirSTab" class="add-container contenido-tab" style="display:none;">
+        <h1>Añadir Sucursal</h1>
+        <form id="nuevaSucursalForm">
+            <label for="nombreSucursal">Nombre de Sucursal:</label>
+            <input type="text" id="nombreSucursal" required>
+            <button class="boton-secundario" type="button" onclick="crearTablaSucursal()">Crear Tabla</button>
+        </form>
+    </div>
+    <!-- ... (Añadir Sucursales) ... -->
+
+    <!-- ... (Sucursales) ... -->
+    <div id="SucursalesTab" class="suc-container contenido-tab" style="display:none;">
+        <h1>Sucursales</h1>
+        <div id="sucursalesContenido"></div>
+    </div>
+    <!-- ... (Sucursales) ... -->
+
+    <!-- ... (Edit Sucursales) ... -->
+    <div id="EditarSTab" class="editsuc-container contenido-tab" style="display:none;">
+        <h1>Editar Sucursal</h1>
+        <label for="selectSucursales">Seleccionar Sucursal:</label>
+        <select id="selectSucursales"></select><br>
+        <button class="boton-cuaternario" type="button" onclick="distribuirStockSucursal()">Distribuir Stock</button>
+        <button class="boton-cuaternario" type="button" onclick="eliminarProductoDeSucursal()">Eliminar Stock</button>
+        <button class="boton-terciario" type="button" onclick="agregarPiezasASucursal()">+</button>
+        <button class="boton-terciario" type="button" onclick="restarPiezasDeSucursal()">-</button>
+    </div>
+    <!-- ... (Edit Sucursales) ... -->
+        
+        
+
+<script src="script.js"></script>
+</body>
+</html>
