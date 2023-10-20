@@ -24,7 +24,7 @@ function irSucursales() {
 }
 
 function CerrarSesion() {
-    window.location.href = "index.html";
+    window.location.href = "https://wisestock.tech/inicio.html";
 }
 
 function VolverAtras() {
