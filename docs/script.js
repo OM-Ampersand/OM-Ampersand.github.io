@@ -35,10 +35,31 @@ function Comenzar() {
     window.location.href = "menu.html";
 }
 
+// Añadido Define un objeto para almacenar el producto seleccionado
 
 let codigoActual = 1;
 let letra1 = 'A';
 let letra2 = 'A';
+let productoSeleccionado2 = {};
+
+function obtenerUltimoCodigo() {
+    const ultimoCodigo = localStorage.getItem('ultimoCodigo');
+
+    if (ultimoCodigo) {
+        const partesCodigo = ultimoCodigo.match(/^([A-Z])([A-Z])(\d+)$/);
+
+        if (partesCodigo) {
+            letra1 = partesCodigo[1];
+            letra2 = partesCodigo[2];
+            codigoActual = Number(partesCodigo[3]);
+        }
+    }
+}
+
+function actualizarUltimoCodigo() {
+    const ultimoCodigo = letra1 + letra2 + String(codigoActual).padStart(3, '0');
+    localStorage.setItem('ultimoCodigo', ultimoCodigo);
+}
 
 function generarCodigo() {
     const codigoNumeros = String(codigoActual).padStart(3, '0');
@@ -53,18 +74,22 @@ function generarCodigo() {
             letra2 = 'A';
             letra1 = String.fromCharCode(letra1.charCodeAt(0) + 1);
             if (letra1 > 'Z') {
-                letra1 = 'A'; // Reiniciamos a 'A' si hemos llegado a 'Z'
+                letra1 = 'A';
             }
         }
     }
 
+    actualizarUltimoCodigo(); // Llamar a la función para actualizar el último código
     return codigo;
 }
+
+// Llamar a la función para obtener el último código al cargar la página
+obtenerUltimoCodigo();
+
 
 function agregarProducto() {
     const nombre = document.getElementById('nombre').value;
     const descripcion = document.getElementById('descripcion').value;
-    // Acá Inserte algo nuevo
     const seccion = document.getElementById('seccion').value;
     const precio = document.getElementById('precio').value;
     const stock = document.getElementById('stock').value;
@@ -80,16 +105,40 @@ function agregarProducto() {
         <td>${precio}</td>
         <td>${stock}</td>
         <td>${codigo}</td>
-        <td>
-            <button class="boton-terciario" type="button" onclick="sumarStockProducto(this)">+</button>
-            <button class="boton-terciario" type="button" onclick="restarStockProducto(this)">-</button>
-        </td>
     `;
 
     inventario.appendChild(newRow);
-    // Mostrar alerta
+//  Enviar el producto a la hoja de cálculo
+    enviarProductoHojaCalculo(nombre, descripcion, seccion, precio, stock, codigo);
+
     alert("Producto añadido con éxito.");
 
+    
+}
+
+async function enviarProductoHojaCalculo(nombre, descripcion, seccion, precio, stock, codigo) {
+    try {
+        const respuesta = await fetch('https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893', {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "Nombre": nombre,
+                "Descripción": descripcion,
+                "Sección": seccion,
+                "Precio": precio,
+                "Stock": stock,
+                "Código": codigo
+            })
+        });
+
+        const contenido = await respuesta.json();
+        console.log(contenido);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 function sumarStockProducto(button) {
@@ -122,6 +171,9 @@ function sumarStock() {
 
     // Mostrar alerta
     alert("El producto ha sido correctamente modificado.");
+
+    // Actualizar la Hoja de Cálculo
+    actualizarStockHojaCalculo(codigo, Number(cantidad), true);
 }
 
 function restarStock() {
@@ -139,9 +191,82 @@ function restarStock() {
             break;
         }
     }
-        // Mostrar alerta
-        alert("El producto ha sido correctamente modificado.");
+    
+    // Mostrar alerta
+    alert("El producto ha sido correctamente modificado.");
+
+    // Actualizar la Hoja de Cálculo
+    actualizarStockHojaCalculo(codigo, Number(cantidad), false);
 }
+
+async function actualizarStockHojaCalculo(codigo, cantidad, esSuma) {
+    try {
+        const respuesta = await fetch(`https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893/Código/${codigo}`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const contenido = await respuesta.json();
+
+        if (contenido.length > 0) {
+            const producto = contenido[0];
+
+            if (esSuma) {
+                producto.Stock = parseInt(producto.Stock) + parseInt(cantidad);
+            } else {
+                producto.Stock = parseInt(producto.Stock) - parseInt(cantidad);
+                if (producto.Stock < 0) {
+                    producto.Stock = 0; // No permitir stock negativo
+                }
+            }
+
+            const actualizacion = await fetch(`https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893/Código/${codigo}`, {
+                method: 'PATCH',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "Stock": producto.Stock
+                })
+            });
+
+            const respuestaActualizacion = await actualizacion.json();
+            console.log(respuestaActualizacion);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+async function actualizarProductoHojaCalculo(producto) {
+    try {
+        const respuesta = await fetch(`https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893/Código/${producto.codigo}`, {
+            method: 'PATCH',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "Nombre": producto.nombre,
+                "Descripción": producto.descripcion,
+                "Sección": producto.seccion,
+                "Precio": producto.precio,
+                "Stock": producto.stock
+            })
+        });
+
+        const contenido = await respuesta.json();
+        console.log(contenido);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 function mostrarContenido(tab) {
     const tabs = document.querySelectorAll('.contenido-tab');
@@ -149,73 +274,8 @@ function mostrarContenido(tab) {
     document.getElementById(tab + 'Tab').style.display = 'block';
 }
 
-let sucursales = [];
+// ... (resto del código) ...
 
-function crearTablaSucursal() {
-    const nombreSucursal = document.getElementById('nombreSucursal').value;
-    const sucursal = { nombre: nombreSucursal, inventario: [] };
-    sucursales.push(sucursal);
-
-    const sucursalesContenido = document.getElementById('sucursalesContenido');
-    const nuevaTabla = document.createElement('div');
-    nuevaTabla.innerHTML = `
-        <h2>Sucursal: ${nombreSucursal}</h2>
-        <table>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Sección</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Código</th>
-            </tr>
-        </table>
-        <button class="boton-secundario" type="button" onclick="distribuirStock('${nombreSucursal}')">Distribuir Stock</button>
-    `;
-    sucursal.tabla = nuevaTabla.querySelector('table');
-    sucursalesContenido.appendChild(nuevaTabla);
-        alert("Sucursal añadida con éxito.");
-}
-
-function distribuirStock(sucursalNombre) {
-    const sucursal = sucursales.find(s => s.nombre === sucursalNombre);
-    if (!sucursal) return;
-
-    const codigo = prompt(`Ingrese el código del producto para la sucursal ${sucursalNombre}`);
-    const cantidad = parseInt(prompt(`Ingrese la cantidad de stock a distribuir a la sucursal ${sucursalNombre}`));
-
-    const inventario = document.getElementById('inventario').getElementsByTagName('tr');
-    for (let i = 1; i < inventario.length; i++) {
-        const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
-        if (codigo === codigoProducto) {
-            const stockCell = inventario[i].getElementsByTagName('td')[4];
-            const cantidadDistribuida = Math.min(cantidad, Number(stockCell.textContent));
-            stockCell.textContent = Number(stockCell.textContent) - cantidadDistribuida;
-
-            const newRow = sucursal.tabla.insertRow();
-            newRow.innerHTML = `
-                <td>${inventario[i].getElementsByTagName('td')[0].textContent}</td>
-                <td>${inventario[i].getElementsByTagName('td')[1].textContent}</td>
-                <td>${inventario[i].getElementsByTagName('td')[2].textContent}</td>
-                <td>${inventario[i].getElementsByTagName('td')[3].textContent}</td>
-                <td>${cantidadDistribuida}</td>
-                <td>${codigo}</td>
-            `;
-            sucursal.inventario.push({
-                nombre: inventario[i].getElementsByTagName('td')[0].textContent,
-                descripcion: inventario[i].getElementsByTagName('td')[1].textContent,
-                seccion: inventario[i].getElementsByTagName('td')[2].textContent,
-                precio: inventario[i].getElementsByTagName('td')[3].textContent,
-                stock: cantidadDistribuida,
-                codigo: codigo
-            });
-            
-            break;
-        }
-    }
-}
-
-let productoSeleccionado = null;
 
 function buscarProducto() {
     const codigo = document.getElementById('codigoProducto').value;
@@ -231,7 +291,7 @@ function buscarProducto() {
             const precio = inventario[i].getElementsByTagName('td')[3].textContent;
             const stock = inventario[i].getElementsByTagName('td')[4].textContent;
 
-            productoSeleccionado = {
+            productoSeleccionado2 = {
                 nombre: nombre,
                 descripcion: descripcion,
                 seccion: seccion,
@@ -268,34 +328,64 @@ function confirmarModificacion() {
         for (let i = 1; i < inventario.length; i++) {
             const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
 
-            if (productoSeleccionado.codigo === codigoProducto) {
+            if (productoSeleccionado2.codigo === codigoProducto) {
                 inventario[i].getElementsByTagName('td')[0].textContent = document.getElementById('nombreMod').value;
                 inventario[i].getElementsByTagName('td')[1].textContent = document.getElementById('descripcionMod').value;
                 inventario[i].getElementsByTagName('td')[2].textContent = document.getElementById('seccionMod').value;
                 inventario[i].getElementsByTagName('td')[3].textContent = document.getElementById('precioMod').value;
                 inventario[i].getElementsByTagName('td')[4].textContent = document.getElementById('stockMod').value;
 
+                // Actualizar el producto seleccionado
+                productoSeleccionado2.nombre = document.getElementById('nombreMod').value;
+                productoSeleccionado2.descripcion = document.getElementById('descripcionMod').value;
+                productoSeleccionado2.seccion = document.getElementById('seccionMod').value;
+                productoSeleccionado2.precio = document.getElementById('precioMod').value;
+                productoSeleccionado2.stock = document.getElementById('stockMod').value;
+
                 // Ocultar la interfaz de modificación después de modificar el producto
                 document.getElementById('modificarProducto').style.display = 'none';
 
                 // Mostrar alerta de modificación exitosa
                 alert("Producto modificado con éxito.");
+
+                // Actualizar la hoja de cálculo
+                actualizarProductoHojaCalculo(productoSeleccionado2);
                 return; // Salir de la función después de modificar el producto
             }
         }
     }
 }
 
+// Función para actualizar el producto en la hoja de cálculo
+async function actualizarProductoHojaCalculo(producto) {
+    try {
+        const respuesta = await fetch(`https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893/Código/${producto.codigo}`, {
+            method: 'PATCH',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "Nombre": producto.nombre,
+                "Descripción": producto.descripcion,
+                "Sección": producto.seccion,
+                "Precio": producto.precio,
+                "Stock": producto.stock
+            })
+        });
+
+        const contenido = await respuesta.json();
+        console.log(contenido);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
 function cancelarModificacion() {
     // Ocultar la interfaz de modificación si se cancela
     document.getElementById('modificarProducto').style.display = 'none';
 }
-
-// HTML necesario:
-// - Un cuadro de texto con el ID 'codigoProducto'
-// - Un botón "Siguiente" que llama a la función buscarProducto
-// - Una interfaz de modificación con campos para nombre, descripción, sección, precio y stock, y un botón "Aceptar" que llama a la función confirmarModificacion, y un botón "Cancelar" que llama a la función cancelarModificacion
-// ...
 
 function buscarProductos() {
     const criterio = document.getElementById('criterio').value;
@@ -365,6 +455,74 @@ function mostrarContenido(tab) {
         });
     }
 }
+
+let sucursales = [];
+
+function crearTablaSucursal() {
+    const nombreSucursal = document.getElementById('nombreSucursal').value;
+    const sucursal = { nombre: nombreSucursal, inventario: [] };
+    sucursales.push(sucursal);
+
+    const sucursalesContenido = document.getElementById('sucursalesContenido');
+    const nuevaTabla = document.createElement('div');
+    nuevaTabla.innerHTML = `
+        <h2>Sucursal: ${nombreSucursal}</h2>
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Sección</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Código</th>
+            </tr>
+        </table>
+        <button class="boton-secundario" type="button" onclick="distribuirStock('${nombreSucursal}')">Distribuir Stock</button>
+    `;
+    sucursal.tabla = nuevaTabla.querySelector('table');
+    sucursalesContenido.appendChild(nuevaTabla);
+        alert("Sucursal añadida con éxito.");
+}
+
+function distribuirStock(sucursalNombre) {
+    const sucursal = sucursales.find(s => s.nombre === sucursalNombre);
+    if (!sucursal) return;
+
+    const codigo = prompt(`Ingrese el código del producto para la sucursal ${sucursalNombre}`);
+    const cantidad = parseInt(prompt(`Ingrese la cantidad de stock a distribuir a la sucursal ${sucursalNombre}`));
+
+    const inventario = document.getElementById('inventario').getElementsByTagName('tr');
+    for (let i = 1; i < inventario.length; i++) {
+        const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
+        if (codigo === codigoProducto) {
+            const stockCell = inventario[i].getElementsByTagName('td')[4];
+            const cantidadDistribuida = Math.min(cantidad, Number(stockCell.textContent));
+            stockCell.textContent = Number(stockCell.textContent) - cantidadDistribuida;
+
+            const newRow = sucursal.tabla.insertRow();
+            newRow.innerHTML = `
+                <td>${inventario[i].getElementsByTagName('td')[0].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[1].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[2].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[3].textContent}</td>
+                <td>${cantidadDistribuida}</td>
+                <td>${codigo}</td>
+            `;
+            sucursal.inventario.push({
+                nombre: inventario[i].getElementsByTagName('td')[0].textContent,
+                descripcion: inventario[i].getElementsByTagName('td')[1].textContent,
+                seccion: inventario[i].getElementsByTagName('td')[2].textContent,
+                precio: inventario[i].getElementsByTagName('td')[3].textContent,
+                stock: cantidadDistribuida,
+                codigo: codigo
+            });
+            
+            break;
+        }
+    }
+}
+
+let productoSeleccionado = null;
 
 function distribuirStockSucursal() {
     const sucursalSeleccionada = document.getElementById('selectSucursales').value;
@@ -570,3 +728,43 @@ function restarPiezasDeSucursal() {
     }
 }
 
+async function obtenerProductosDeHojaCalculo() {
+    try {
+        const respuesta = await fetch('https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893', {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const productos = await respuesta.json();
+        return productos;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
+async function cargarProductosEnTabla() {
+    const inventarioTabla = document.getElementById('inventario');
+
+    // Obtener los productos de la hoja de cálculo
+    const productos = await obtenerProductosDeHojaCalculo();
+
+    // Llenar la tabla con los productos
+    productos.forEach(producto => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>${producto.Nombre}</td>
+            <td>${producto.Descripción}</td>
+            <td>${producto.Sección}</td>
+            <td>${producto.Precio}</td>
+            <td>${producto.Stock}</td>
+            <td>${producto.Código}</td>
+        `;
+        inventarioTabla.appendChild(newRow);
+    });
+}
+
+window.addEventListener('load', cargarProductosEnTabla);
