@@ -36,39 +36,25 @@ function Comenzar() {
 }
 
 // Añadido Define un objeto para almacenar el producto seleccionado
-
 let codigoActual = 1;
 let letra1 = 'A';
 let letra2 = 'A';
 let productoSeleccionado2 = {};
 
 function obtenerUltimoCodigo() {
-    const ultimoCodigo = localStorage.getItem('ultimoCodigo');
-
-    if (ultimoCodigo) {
-        const partesCodigo = ultimoCodigo.match(/^([A-Z])([A-Z])(\d+)$/);
-
-        if (partesCodigo) {
-            letra1 = partesCodigo[1];
-            letra2 = partesCodigo[2];
-            codigoActual = Number(partesCodigo[3]);
-        }
-    }
-}
-
-function actualizarUltimoCodigo() {
-    const ultimoCodigo = letra1 + letra2 + String(codigoActual).padStart(3, '0');
-    localStorage.setItem('ultimoCodigo', ultimoCodigo);
+    const inventario = document.getElementById('inventario').getElementsByTagName('tr');
+    const ultimaFila = inventario[inventario.length - 1];
+    const ultimoCodigo = ultimaFila ? ultimaFila.querySelector('td:nth-child(6)').textContent : 'AA000';
+    return ultimoCodigo;
 }
 
 function generarCodigo() {
-    const codigoNumeros = String(codigoActual).padStart(3, '0');
+    const ultimoCodigo = obtenerUltimoCodigo();
+    const numero = parseInt(ultimoCodigo.substring(2)) + 1;
+    const codigoNumeros = String(numero).padStart(3, '0');
     const codigo = letra1 + letra2 + codigoNumeros;
 
-    if (codigoActual < 999) {
-        codigoActual++;
-    } else {
-        codigoActual = 1;
+    if (numero > 999) {
         letra2 = String.fromCharCode(letra2.charCodeAt(0) + 1);
         if (letra2 > 'Z') {
             letra2 = 'A';
@@ -79,13 +65,8 @@ function generarCodigo() {
         }
     }
 
-    actualizarUltimoCodigo(); // Llamar a la función para actualizar el último código
     return codigo;
 }
-
-// Llamar a la función para obtener el último código al cargar la página
-obtenerUltimoCodigo();
-
 
 function agregarProducto() {
     const nombre = document.getElementById('nombre').value;
@@ -118,7 +99,7 @@ function agregarProducto() {
 
 async function enviarProductoHojaCalculo(nombre, descripcion, seccion, precio, stock, codigo) {
     try {
-        const respuesta = await fetch('https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893', {
+        const respuesta = await fetch('https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0', {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -201,7 +182,7 @@ function restarStock() {
 
 async function actualizarStockHojaCalculo(codigo, cantidad, esSuma) {
     try {
-        const respuesta = await fetch(`https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893/Código/${codigo}`, {
+        const respuesta = await fetch(`https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/Código/${codigo}`, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -223,7 +204,7 @@ async function actualizarStockHojaCalculo(codigo, cantidad, esSuma) {
                 }
             }
 
-            const actualizacion = await fetch(`https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893/Código/${codigo}`, {
+            const actualizacion = await fetch(`https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/Código/${codigo}`, {
                 method: 'PATCH',
                 mode: 'cors',
                 headers: {
@@ -245,7 +226,7 @@ async function actualizarStockHojaCalculo(codigo, cantidad, esSuma) {
 
 async function actualizarProductoHojaCalculo(producto) {
     try {
-        const respuesta = await fetch(`https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893/Código/${producto.codigo}`, {
+        const respuesta = await fetch(`https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/Código/${producto.codigo}`, {
             method: 'PATCH',
             mode: 'cors',
             headers: {
@@ -359,7 +340,7 @@ function confirmarModificacion() {
 // Función para actualizar el producto en la hoja de cálculo
 async function actualizarProductoHojaCalculo(producto) {
     try {
-        const respuesta = await fetch(`https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893/Código/${producto.codigo}`, {
+        const respuesta = await fetch(`https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/Código/${producto.codigo}`, {
             method: 'PATCH',
             mode: 'cors',
             headers: {
@@ -730,7 +711,7 @@ function restarPiezasDeSucursal() {
 
 async function obtenerProductosDeHojaCalculo() {
     try {
-        const respuesta = await fetch('https://sheet.best/api/sheets/d3f7e817-4130-4931-a597-c7638d7e0893', {
+        const respuesta = await fetch('https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0', {
             method: 'GET',
             mode: 'cors',
             headers: {
