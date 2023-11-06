@@ -68,7 +68,26 @@ button{
 }
 
 /* ------------- Generales --------------- */
+/* ---------------------------- */
+#InventarioTab h1 {
+    color: #000000; /* Color del título de la tabla */
+    text-align: center; /* Centra el título */
+}
 
+.tab-container {
+    width: 1400px;
+    margin: 5px auto;
+    background-color: rgb(255, 255, 255); /* Fondo blanco semitransparente */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px; /* Esquinas redondeadas */
+    padding: 10px; /* Espaciado interno */
+    text-align: center;
+}
+
+.contenido-tab {
+    margin: 0 1cm; /* Margen de 1cm entre izquierda y derecha */
+    text-align: center; /* Centra el contenido */
+}
 /* ------------- Añadir Sucursal --------------- */
 .add-container {
     width: 400px;
