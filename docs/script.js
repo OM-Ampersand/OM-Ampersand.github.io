@@ -234,7 +234,6 @@ async function actualizarStockHojaCalculo(codigo, cantidad, esSuma) {
     }
 }
 
-
 async function actualizarProductoHojaCalculo(producto) {
     try {
         const respuesta = await fetch(`https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/Código/${producto.codigo}`, {
@@ -260,7 +259,6 @@ async function actualizarProductoHojaCalculo(producto) {
         console.log(error);
     }
 }
-
 
 function mostrarContenido(tab) {
     const tabs = document.querySelectorAll('.contenido-tab');
@@ -459,6 +457,22 @@ function mostrarContenido(tab) {
             option.textContent = sucursal.nombre;
             selectSucursales.appendChild(option);
         });
+
+            // Agregar "Sucursal_CUU" al desplegable
+            const optionCUU = document.createElement('option');
+            optionCUU.value = "Sucursal CUU";
+            optionCUU.textContent = "Sucursal CUU";
+            selectSucursales.appendChild(optionCUU);
+
+            const optionCRE = document.createElement('option');
+            optionCRE.value = "Credito";
+            optionCRE.textContent = "Credito";
+            selectSucursales.appendChild(optionCRE);
+
+            const optionPRE = document.createElement('option');
+            optionPRE.value = "Prestamo";
+            optionPRE.textContent = "Prestamo";
+            selectSucursales.appendChild(optionPRE);
     }
 }
 
@@ -722,7 +736,7 @@ async function enviarProductoPrestamo(producto) {
 
 async function enviarProductoSucursal_CUAU(producto) {
     try {
-        const respuesta = await fetch('https://sheet.best/api/sheets/4b04cde9-51e3-416d-9536-51935d864e66/tabs/Sucursal_CUAU', {
+        const respuesta = await fetch('https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/tabs/Sucursal_CUAU', {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -759,7 +773,7 @@ function distribuirStock(sucursalNombre) {
         for (let i = 1; i < inventario.length; i++) {
             const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
             if (codigo === codigoProducto) {
-                const stockCell = inventario[i].getElementsByTagName('td')[5];
+                const stockCell = inventario[i].getElementsByTagName('td')[6];
                 const cantidadDistribuida = Math.min(cantidad, Number(stockCell.textContent));
                 stockCell.textContent = Number(stockCell.textContent) - cantidadDistribuida;
 
@@ -794,13 +808,13 @@ function distribuirStock(sucursalNombre) {
                     
                 } else if (sucursalNombre === "Credito") {
                 // Agrega acciones específicas para "Otra Sucursal"
-                    enviarProductoSucursal_CUAU(productoDistribuido);
+                    enviarProductoCredito(productoDistribuido);
 
                 } else if (sucursalNombre === "Prestamo") {
                     // Agrega acciones específicas para "Otra Sucursal"
-                        enviarProductoSucursal_CUAU(productoDistribuido);
+                        enviarProductoPrestamo(productoDistribuido);
 
-                } else if (sucursalNombre === "Sucursal_CUAU") {
+                } else if (sucursalNombre === "Sucursal CUAU") {
                     // Agrega acciones específicas para "Otra Sucursal"
                         enviarProductoSucursal_CUAU(productoDistribuido);
 
