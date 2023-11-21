@@ -52,20 +52,22 @@
     </div>
     
     <div id="InventarioTab" class="tab-container contenido-tab">
-            <h1>Almacen</h1>
-        <table id="inventario">
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Sección</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Código</th>
-                <!-- ...  <th>Acciones</th> ... -->
-            </tr>
-        </table>
+        <h1>Almacen</h1>
+    <table id="inventario">
+        <tr>
+            <th>Fecha</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Sección</th>
+            <th>Compra</th>
+            <th>Venta</th>
+            <th>Stock</th>
+            <th>Código</th>
+            <!-- ...  <th>Acciones</th> ... -->
+        </tr>
+    </table>
     </div>
-    
+
 
     <div id="NuevoTab" class="new-container contenido-tab" style="display:none;">
             <h1>Nuevo Producto</h1>
@@ -79,8 +81,11 @@
             <label for="seccion">Sección:</label>
             <input type="text" id="seccion" required><br>
 
-            <label for="precio">Precio:</label>
-            <input type="number" id="precio" required><br>
+            <label for="compra">Compra:</label>
+            <input type="number" id="compra" required><br>
+
+            <label for="venta">Venta:</label>
+            <input type="number" id="venta" required><br>
 
             <label for="stock">Stock:</label>
             <input type="number" id="stock" required><br>
@@ -106,9 +111,12 @@
             
             <label for="seccionMod">Sección:</label>
             <input type="text" id="seccionMod"><br>
+
+            <label for="compraMod">Compra:</label>
+            <input type="text" id="compraMod"><br>
             
-            <label for="precioMod">Precio:</label>
-            <input type="text" id="precioMod"><br>
+            <label for="ventaMod">Venta:</label>
+            <input type="text" id="ventaMod"><br>
             
             <label for="stockMod">Stock:</label>
             <input type="text" id="stockMod"><br>
@@ -127,7 +135,8 @@
             <option value="nombre">Nombre</option>
             <option value="descripcion">Descripción</option>
             <option value="seccion">Sección</option>
-            <option value="precio">Precio</option>
+            <option value="compra">Compra</option>
+            <option value="venta">Venta</option>
             <option value="stock">Stock</option>
             <option value="codigo">Código</option>
         </select>
@@ -151,10 +160,10 @@
         <button type="button" class="boton-primario" onclick="sumarStock()">Sumar Stock</button>
         <button type="button" class="boton-primario" onclick="restarStock()">Restar Stock</button>
     </form>
-<!-- ... (código anterior) ... -->
+    <!-- ... (código anterior) ... -->
     </div>
-    
-           <!-- Contenido de la pestaña "Sucursales" -->
+
+       <!-- Contenido de la pestaña "Sucursales" -->
 
 <script src="script.js"></script>
 </body>

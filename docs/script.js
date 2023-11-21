@@ -44,7 +44,7 @@ let productoSeleccionado2 = {};
 function obtenerUltimoCodigo() {
     const inventario = document.getElementById('inventario').getElementsByTagName('tr');
     const ultimaFila = inventario[inventario.length - 1];
-    const ultimoCodigo = ultimaFila ? ultimaFila.querySelector('td:nth-child(6)').textContent : 'AA000';
+    const ultimoCodigo = ultimaFila ? ultimaFila.querySelector('td:nth-child(8)').textContent : 'AA000';
     return ultimoCodigo;
 }
 
@@ -68,11 +68,19 @@ function generarCodigo() {
     return codigo;
 }
 
+function obtenerFechaActual() {
+    const fecha = new Date();
+    const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return fecha.toLocaleDateString('es-ES', opcionesFecha);
+}
+
 function agregarProducto() {
+    const fechaActual = obtenerFechaActual(); // Obtener la fecha actual
     const nombre = document.getElementById('nombre').value;
     const descripcion = document.getElementById('descripcion').value;
     const seccion = document.getElementById('seccion').value;
-    const precio = document.getElementById('precio').value;
+    const compra = document.getElementById('compra').value;
+    const venta = document.getElementById('venta').value;
     const stock = document.getElementById('stock').value;
     const codigo = generarCodigo();
 
@@ -80,24 +88,25 @@ function agregarProducto() {
 
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
+        <td>${fechaActual}</td>
         <td>${nombre}</td>
         <td>${descripcion}</td>
         <td>${seccion}</td>
-        <td>${precio}</td>
+        <td>${compra}</td>
+        <td>${venta}</td>
         <td>${stock}</td>
         <td>${codigo}</td>
     `;
 
     inventario.appendChild(newRow);
-//  Enviar el producto a la hoja de cálculo
-    enviarProductoHojaCalculo(nombre, descripcion, seccion, precio, stock, codigo);
+
+    // Enviar el producto a la hoja de cálculo
+    enviarProductoHojaCalculo(fechaActual, nombre, descripcion, seccion, compra, venta, stock, codigo);
 
     alert("Producto añadido con éxito.");
-
-    
 }
 
-async function enviarProductoHojaCalculo(nombre, descripcion, seccion, precio, stock, codigo) {
+async function enviarProductoHojaCalculo(fechaActual, nombre, descripcion, seccion, compra, venta, stock, codigo) {
     try {
         const respuesta = await fetch('https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0', {
             method: 'POST',
@@ -106,10 +115,12 @@ async function enviarProductoHojaCalculo(nombre, descripcion, seccion, precio, s
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                "Fecha": fechaActual,
                 "Nombre": nombre,
                 "Descripción": descripcion,
                 "Sección": seccion,
-                "Precio": precio,
+                "Compra": compra,
+                "Venta": venta,
                 "Stock": stock,
                 "Código": codigo
             })
@@ -124,13 +135,13 @@ async function enviarProductoHojaCalculo(nombre, descripcion, seccion, precio, s
 
 function sumarStockProducto(button) {
     const row = button.parentElement.parentElement;
-    const stockCell = row.querySelector('td:nth-child(5)');
+    const stockCell = row.querySelector('td:nth-child(6)');
     stockCell.textContent = Number(stockCell.textContent) + 1;
 }
 
 function restarStockProducto(button) {
     const row = button.parentElement.parentElement;
-    const stockCell = row.querySelector('td:nth-child(5)');
+    const stockCell = row.querySelector('td:nth-child(6)');
     if (Number(stockCell.textContent) > 0) {
         stockCell.textContent = Number(stockCell.textContent) - 1;
     }
@@ -142,9 +153,9 @@ function sumarStock() {
 
     const inventario = document.getElementById('inventario').getElementsByTagName('tr');
     for (let i = 1; i < inventario.length; i++) {
-        const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
+        const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
         if (codigo === codigoProducto) {
-            const stockCell = inventario[i].getElementsByTagName('td')[4];
+            const stockCell = inventario[i].getElementsByTagName('td')[6];
             stockCell.textContent = Number(stockCell.textContent) + cantidad;
             break;
         }
@@ -163,9 +174,9 @@ function restarStock() {
 
     const inventario = document.getElementById('inventario').getElementsByTagName('tr');
     for (let i = 1; i < inventario.length; i++) {
-        const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
+        const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
         if (codigo === codigoProducto) {
-            const stockCell = inventario[i].getElementsByTagName('td')[4];
+            const stockCell = inventario[i].getElementsByTagName('td')[6];
             if (Number(stockCell.textContent) >= cantidad) {
                 stockCell.textContent = Number(stockCell.textContent) - cantidad;
             }
@@ -233,10 +244,12 @@ async function actualizarProductoHojaCalculo(producto) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                "Fecha": producto.fechaActual,
                 "Nombre": producto.nombre,
                 "Descripción": producto.descripcion,
                 "Sección": producto.seccion,
-                "Precio": producto.precio,
+                "Compra": producto.compra,
+                "Venta": producto.venta,
                 "Stock": producto.stock
             })
         });
@@ -255,28 +268,27 @@ function mostrarContenido(tab) {
     document.getElementById(tab + 'Tab').style.display = 'block';
 }
 
-// ... (resto del código) ...
-
-
 function buscarProducto() {
     const codigo = document.getElementById('codigoProducto').value;
     const inventario = document.getElementById('inventario').getElementsByTagName('tr');
 
     for (let i = 1; i < inventario.length; i++) {
-        const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
+        const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
 
         if (codigo === codigoProducto) {
-            const nombre = inventario[i].getElementsByTagName('td')[0].textContent;
-            const descripcion = inventario[i].getElementsByTagName('td')[1].textContent;
-            const seccion = inventario[i].getElementsByTagName('td')[2].textContent;
-            const precio = inventario[i].getElementsByTagName('td')[3].textContent;
-            const stock = inventario[i].getElementsByTagName('td')[4].textContent;
+            const nombre = inventario[i].getElementsByTagName('td')[1].textContent;
+            const descripcion = inventario[i].getElementsByTagName('td')[2].textContent;
+            const seccion = inventario[i].getElementsByTagName('td')[3].textContent;
+            const compra = inventario[i].getElementsByTagName('td')[4].textContent;
+            const venta = inventario[i].getElementsByTagName('td')[5].textContent;
+            const stock = inventario[i].getElementsByTagName('td')[6].textContent;
 
             productoSeleccionado2 = {
                 nombre: nombre,
                 descripcion: descripcion,
                 seccion: seccion,
-                precio: precio,
+                compra: compra,
+                venta: venta,
                 stock: stock,
                 codigo: codigo
             };
@@ -285,7 +297,8 @@ function buscarProducto() {
             document.getElementById('nombreMod').value = nombre;
             document.getElementById('descripcionMod').value = descripcion;
             document.getElementById('seccionMod').value = seccion;
-            document.getElementById('precioMod').value = precio;
+            document.getElementById('compraMod').value = compra;
+            document.getElementById('ventaMod').value = venta;
             document.getElementById('stockMod').value = stock;
 
             // Mostrar la interfaz de modificación
@@ -307,20 +320,24 @@ function confirmarModificacion() {
         const inventario = document.getElementById('inventario').getElementsByTagName('tr');
 
         for (let i = 1; i < inventario.length; i++) {
-            const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
+            const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
 
             if (productoSeleccionado2.codigo === codigoProducto) {
-                inventario[i].getElementsByTagName('td')[0].textContent = document.getElementById('nombreMod').value;
-                inventario[i].getElementsByTagName('td')[1].textContent = document.getElementById('descripcionMod').value;
-                inventario[i].getElementsByTagName('td')[2].textContent = document.getElementById('seccionMod').value;
-                inventario[i].getElementsByTagName('td')[3].textContent = document.getElementById('precioMod').value;
-                inventario[i].getElementsByTagName('td')[4].textContent = document.getElementById('stockMod').value;
+                inventario[i].getElementsByTagName('td')[0].textContent = document.getElementById('fechaActualMod').value;
+                inventario[i].getElementsByTagName('td')[1].textContent = document.getElementById('nombreMod').value;
+                inventario[i].getElementsByTagName('td')[2].textContent = document.getElementById('descripcionMod').value;
+                inventario[i].getElementsByTagName('td')[3].textContent = document.getElementById('seccionMod').value;
+                inventario[i].getElementsByTagName('td')[4].textContent = document.getElementById('compraMod').value;
+                inventario[i].getElementsByTagName('td')[5].textContent = document.getElementById('ventaMod').value;
+                inventario[i].getElementsByTagName('td')[6].textContent = document.getElementById('stockMod').value;
 
                 // Actualizar el producto seleccionado
+                productoSeleccionado2.fechaActual = document.getElementById('fechaActualMod').value;
                 productoSeleccionado2.nombre = document.getElementById('nombreMod').value;
                 productoSeleccionado2.descripcion = document.getElementById('descripcionMod').value;
                 productoSeleccionado2.seccion = document.getElementById('seccionMod').value;
-                productoSeleccionado2.precio = document.getElementById('precioMod').value;
+                productoSeleccionado2.compra = document.getElementById('compraMod').value;
+                productoSeleccionado2.venta = document.getElementById('ventaMod').value;
                 productoSeleccionado2.stock = document.getElementById('stockMod').value;
 
                 // Ocultar la interfaz de modificación después de modificar el producto
@@ -337,7 +354,6 @@ function confirmarModificacion() {
     }
 }
 
-// Función para actualizar el producto en la hoja de cálculo
 async function actualizarProductoHojaCalculo(producto) {
     try {
         const respuesta = await fetch(`https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/Código/${producto.codigo}`, {
@@ -347,10 +363,12 @@ async function actualizarProductoHojaCalculo(producto) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                "Fecha": producto.fechaActual,
                 "Nombre": producto.nombre,
                 "Descripción": producto.descripcion,
                 "Sección": producto.seccion,
-                "Precio": producto.precio,
+                "Compra": producto.compra,
+                "Venta": producto.venta,
                 "Stock": producto.stock
             })
         });
@@ -361,7 +379,6 @@ async function actualizarProductoHojaCalculo(producto) {
         console.log(error);
     }
 }
-
 
 function cancelarModificacion() {
     // Ocultar la interfaz de modificación si se cancela
@@ -379,19 +396,23 @@ function buscarProductos() {
         const valorCelda = inventario[i].getElementsByTagName('td')[getIndiceCriterio(criterio)].textContent.toLowerCase();
 
         if (valorCelda.includes(busqueda)) {
-            const nombre = inventario[i].getElementsByTagName('td')[0].textContent;
-            const descripcion = inventario[i].getElementsByTagName('td')[1].textContent;
-            const seccion = inventario[i].getElementsByTagName('td')[2].textContent;
-            const precio = inventario[i].getElementsByTagName('td')[3].textContent;
-            const stock = inventario[i].getElementsByTagName('td')[4].textContent;
-            const codigo = inventario[i].getElementsByTagName('td')[5].textContent;
+            const fechaActual = inventario[i].getElementsByTagName('td')[0].textContent;
+            const nombre = inventario[i].getElementsByTagName('td')[1].textContent;
+            const descripcion = inventario[i].getElementsByTagName('td')[2].textContent;
+            const seccion = inventario[i].getElementsByTagName('td')[3].textContent;
+            const compra = inventario[i].getElementsByTagName('td')[4].textContent;
+            const venta = inventario[i].getElementsByTagName('td')[5].textContent;
+            const stock = inventario[i].getElementsByTagName('td')[6].textContent;
+            const codigo = inventario[i].getElementsByTagName('td')[7].textContent;
 
             resultadosDiv.innerHTML += `
                 <div>
+                    <h3>${fechaActual}</h3>
                     <h3>${nombre}</h3>
                     <p>Descripción: ${descripcion}</p>
                     <p>Sección: ${seccion}</p>
-                    <p>Precio: ${precio}</p>
+                    <p>Compra: ${compra}</p>
+                    <p>Venta: ${venta}</p>
                     <p>Stock: ${stock}</p>
                     <p>Código: ${codigo}</p>
                 </div>
@@ -402,18 +423,22 @@ function buscarProductos() {
 
 function getIndiceCriterio(criterio) {
     switch (criterio) {
-        case 'nombre':
+        case 'fechaActual':
             return 0;
-        case 'descripcion':
+        case 'nombre':
             return 1;
-        case 'seccion':
+        case 'descripcion':
             return 2;
-        case 'precio':
+        case 'seccion':
             return 3;
-        case 'stock':
+        case 'compra':
             return 4;
-        case 'codigo':
+        case 'venta':
             return 5;
+        case 'stock':
+            return 6;
+        case 'codigo':
+            return 7;
         default:
             return 0;
     }
@@ -450,10 +475,12 @@ function crearTablaSucursal() {
         <h2>Sucursal: ${nombreSucursal}</h2>
         <table>
             <tr>
+                <th>Fecha</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Sección</th>
-                <th>Precio</th>
+                <th>Compra</th>
+                <th>Venta</th>
                 <th>Stock</th>
                 <th>Código</th>
             </tr>
@@ -465,6 +492,262 @@ function crearTablaSucursal() {
         alert("Sucursal añadida con éxito.");
 }
 
+async function cargarProductosSucursal_CUU(sucursalSucursal_CUUContenido, Sucursal_CUUTabla) {
+    const inventarioTabla = document.getElementById(Sucursal_CUUTabla);
+
+    // Obtener los productos de la sucursal "Sucursal_CUU" de la hoja de cálculo
+    const productos = await obtenerProductosSucursal_CUU();
+
+    // Limpiar la tabla antes de agregar nuevos productos
+    inventarioTabla.innerHTML = '<tr><th>Fecha</th><th>Nombre</th><th>Descripción</th><th>Sección</th><th>Compra</th><th>Venta</th><th>Stock</th><th>Código</th></tr>';
+
+    // Llenar la tabla con los productos
+    productos.forEach(producto => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>${producto.Fecha}</td>
+            <td>${producto.Nombre}</td>
+            <td>${producto.Descripción}</td>
+            <td>${producto.Sección}</td>
+            <td>${producto.Compra}</td>
+            <td>${producto.Venta}</td>
+            <td>${producto.Stock}</td>
+            <td>${producto.Código}</td>
+        `;
+        inventarioTabla.appendChild(newRow);
+    });
+}
+
+window.addEventListener('load', async () => {
+    // Cargar productos en la tabla de la sucursal "Sucursal_CUU"
+    await cargarProductosSucursal_CUU('sucursalSucursal_CUUContenido', 'Sucursal_CUUTabla');
+});
+
+async function cargarProductosCredito(sucursalCreditoContenido, CreditoTabla) {
+    const inventarioTabla = document.getElementById(CreditoTabla);
+
+    // Obtener los productos de la sucursal "Credito" de la hoja de cálculo
+    const productos = await obtenerProductosCredito();
+
+    // Limpiar la tabla antes de agregar nuevos productos
+    inventarioTabla.innerHTML = '<tr><th>Fecha</th><th>Nombre</th><th>Descripción</th><th>Sección</th><th>Compra</th><th>Venta</th><th>Stock</th><th>Código</th></tr>';
+
+    // Llenar la tabla con los productos
+    productos.forEach(producto => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>${producto.Fecha}</td>
+            <td>${producto.Nombre}</td>
+            <td>${producto.Descripción}</td>
+            <td>${producto.Sección}</td>
+            <td>${producto.Compra}</td>
+            <td>${producto.Venta}</td>
+            <td>${producto.Stock}</td>
+            <td>${producto.Código}</td>
+        `;
+        inventarioTabla.appendChild(newRow);
+    });
+}
+
+window.addEventListener('load', async () => {
+    // Cargar productos en la tabla de la sucursal "Sucursal_CUU"
+    await cargarProductosCredito('sucursalCreditoContenido', 'CreditoTabla');
+});
+
+async function cargarProductosPrestamo(sucursalPrestamoContenido, PrestamoTabla) {
+    const inventarioTabla = document.getElementById(PrestamoTabla);
+
+    // Obtener los productos de la sucursal "Credito" de la hoja de cálculo
+    const productos = await obtenerProductosPrestamo();
+
+    // Limpiar la tabla antes de agregar nuevos productos
+    inventarioTabla.innerHTML = '<tr><th>Fecha</th><th>Nombre</th><th>Descripción</th><th>Sección</th><th>Compra</th><th>Venta</th><th>Stock</th><th>Código</th></tr>';
+
+    // Llenar la tabla con los productos
+    productos.forEach(producto => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>${producto.Fecha}</td>
+            <td>${producto.Nombre}</td>
+            <td>${producto.Descripción}</td>
+            <td>${producto.Sección}</td>
+            <td>${producto.Compra}</td>
+            <td>${producto.Venta}</td>
+            <td>${producto.Stock}</td>
+            <td>${producto.Código}</td>
+        `;
+        inventarioTabla.appendChild(newRow);
+    });
+}
+
+window.addEventListener('load', async () => {
+    // Cargar productos en la tabla de la sucursal "Sucursal_CUU"
+    await cargarProductosPrestamo('sucursalPrestamoContenido', 'PrestamoTabla');
+});
+
+async function obtenerProductosSucursal_CUU() {
+    try {
+        const respuesta = await fetch(`https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/tabs/Sucursal_CUU`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const productos = await respuesta.json();
+        return productos;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
+async function obtenerProductosCredito() {
+    try {
+        const respuesta = await fetch(`https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/tabs/Credito`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const productos = await respuesta.json();
+        return productos;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
+async function obtenerProductosPrestamo() {
+    try {
+        const respuesta = await fetch(`https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/tabs/Prestamo`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const productos = await respuesta.json();
+        return productos;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
+async function enviarProductoSucursal_CUU(producto) {
+    try {
+        const respuesta = await fetch('https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/tabs/Sucursal_CUU', {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "Fecha": producto.fechaActual,
+                "Nombre": producto.nombre,
+                "Descripción": producto.descripcion,
+                "Sección": producto.seccion,
+                "Compra": producto.compra,
+                "Venta": producto.venta,
+                "Stock": producto.stock,
+                "Código": producto.codigo
+            })
+        });
+
+        const contenido = await respuesta.json();
+        console.log(contenido);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function enviarProductoCredito(producto) {
+    try {
+        const respuesta = await fetch('https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/tabs/Credito', {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "Fecha": producto.fechaActual,
+                "Nombre": producto.nombre,
+                "Descripción": producto.descripcion,
+                "Sección": producto.seccion,
+                "Compra": producto.compra,
+                "Venta": producto.venta,
+                "Stock": producto.stock,
+                "Código": producto.codigo
+            })
+        });
+
+        const contenido = await respuesta.json();
+        console.log(contenido);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function enviarProductoPrestamo(producto) {
+    try {
+        const respuesta = await fetch('https://sheet.best/api/sheets/88819217-85ef-4b96-85f4-e2966fc927c0/tabs/Prestamo', {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "Fecha": producto.fechaActual,
+                "Nombre": producto.nombre,
+                "Descripción": producto.descripcion,
+                "Sección": producto.seccion,
+                "Compra": producto.compra,
+                "Venta": producto.venta,
+                "Stock": producto.stock,
+                "Código": producto.codigo
+            })
+        });
+
+        const contenido = await respuesta.json();
+        console.log(contenido);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function enviarProductoSucursal_CUAU(producto) {
+    try {
+        const respuesta = await fetch('https://sheet.best/api/sheets/4b04cde9-51e3-416d-9536-51935d864e66/tabs/Sucursal_CUAU', {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "Fecha": producto.fechaActual,
+                "Nombre": producto.nombre,
+                "Descripción": producto.descripcion,
+                "Sección": producto.seccion,
+                "Compra": producto.compra,
+                "Venta": producto.venta,
+                "Stock": producto.stock,
+                "Código": producto.codigo
+            })
+        });
+
+        const contenido = await respuesta.json();
+        console.log(contenido);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
 function distribuirStock(sucursalNombre) {
     const sucursal = sucursales.find(s => s.nombre === sucursalNombre);
     if (!sucursal) return;
@@ -472,35 +755,300 @@ function distribuirStock(sucursalNombre) {
     const codigo = prompt(`Ingrese el código del producto para la sucursal ${sucursalNombre}`);
     const cantidad = parseInt(prompt(`Ingrese la cantidad de stock a distribuir a la sucursal ${sucursalNombre}`));
 
-    const inventario = document.getElementById('inventario').getElementsByTagName('tr');
-    for (let i = 1; i < inventario.length; i++) {
-        const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
-        if (codigo === codigoProducto) {
-            const stockCell = inventario[i].getElementsByTagName('td')[4];
-            const cantidadDistribuida = Math.min(cantidad, Number(stockCell.textContent));
-            stockCell.textContent = Number(stockCell.textContent) - cantidadDistribuida;
+        const inventario = document.getElementById('inventario').getElementsByTagName('tr');
+        for (let i = 1; i < inventario.length; i++) {
+            const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
+            if (codigo === codigoProducto) {
+                const stockCell = inventario[i].getElementsByTagName('td')[5];
+                const cantidadDistribuida = Math.min(cantidad, Number(stockCell.textContent));
+                stockCell.textContent = Number(stockCell.textContent) - cantidadDistribuida;
 
-            const newRow = sucursal.tabla.insertRow();
+                const newRow = sucursal.tabla.insertRow();
+                newRow.innerHTML = `
+                    <td>${inventario[i].getElementsByTagName('td')[0].textContent}</td>
+                    <td>${inventario[i].getElementsByTagName('td')[1].textContent}</td>
+                    <td>${inventario[i].getElementsByTagName('td')[2].textContent}</td>
+                    <td>${inventario[i].getElementsByTagName('td')[3].textContent}</td>
+                    <td>${inventario[i].getElementsByTagName('td')[4].textContent}</td>
+                    <td>${inventario[i].getElementsByTagName('td')[5].textContent}</td>
+                    <td>${cantidadDistribuida}</td>
+                    <td>${codigo}</td>
+                `;
+                
+                const productoDistribuido = {
+                    fechaActual: inventario[i].getElementsByTagName('td')[0].textContent,
+                    nombre: inventario[i].getElementsByTagName('td')[1].textContent,
+                    descripcion: inventario[i].getElementsByTagName('td')[2].textContent,
+                    seccion: inventario[i].getElementsByTagName('td')[3].textContent,
+                    compra: inventario[i].getElementsByTagName('td')[4].textContent,
+                    venta: inventario[i].getElementsByTagName('td')[5].textContent,
+                    stock: cantidadDistribuida,
+                    codigo: codigo
+                };
+
+                sucursal.inventario.push(productoDistribuido);
+
+                // Si el nombre de la sucursal es "Sucursal_CUU", activa enviarProductoHojaCalculo
+                if (sucursalNombre === "Sucursal_CUU") {
+                    enviarProductoSucursal_CUU(productoDistribuido);
+                    
+                } else if (sucursalNombre === "Credito") {
+                // Agrega acciones específicas para "Otra Sucursal"
+                    enviarProductoSucursal_CUAU(productoDistribuido);
+
+                } else if (sucursalNombre === "Prestamo") {
+                    // Agrega acciones específicas para "Otra Sucursal"
+                        enviarProductoSucursal_CUAU(productoDistribuido);
+
+                } else if (sucursalNombre === "Sucursal_CUAU") {
+                    // Agrega acciones específicas para "Otra Sucursal"
+                        enviarProductoSucursal_CUAU(productoDistribuido);
+
+                }
+
+                break;
+            }
+        }
+}
+
+function agregarProductoSucursal_CUU() {
+    const sucursales = [
+        { nombre: "Sucursal_CUU", tabla: document.getElementById('Sucursal_CUUTabla'), inventario: [] },
+        // Otras sucursales...
+    ];
+    const sucursalNombre = "Sucursal_CUU";
+    const sucursal = sucursales.find(s => s.nombre === sucursalNombre);
+
+    if (!sucursal) {
+        alert("Sucursal no encontrada.");
+        return;
+    }
+
+    const codigo = prompt(`Ingrese el código del producto a agregar a la sucursal ${sucursalNombre}`);
+
+    const inventario = document.getElementById('inventario').getElementsByTagName('tr');
+
+    for (let i = 1; i < inventario.length; i++) {
+        const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
+
+        if (codigo === codigoProducto) {
+            const cantidadStockAlmacen = parseInt(inventario[i].getElementsByTagName('td')[6].textContent);
+
+            // Preguntar la cantidad de stock a llevar a la sucursal
+            const cantidad = parseInt(prompt(`Ingrese la cantidad de stock a llevar a la sucursal ${sucursalNombre}`));
+
+            if (isNaN(cantidad) || cantidad <= 0 || cantidad > cantidadStockAlmacen) {
+                alert("Cantidad inválida. Asegúrese de ingresar un número mayor que cero y no mayor que el stock disponible en el almacén principal.");
+                return;
+            }
+
+            // Restar la cantidad del stock en el almacén principal
+            inventario[i].getElementsByTagName('td')[6].textContent = cantidadStockAlmacen - cantidad;
+
+            // Agregar el producto a la tabla de la sucursal Sucursal_CUU con la cantidad especificada
+            const tablaSucursal_CUU = document.getElementById('Sucursal_CUUTabla');
+            const newRow = tablaSucursal_CUU.insertRow();
             newRow.innerHTML = `
                 <td>${inventario[i].getElementsByTagName('td')[0].textContent}</td>
                 <td>${inventario[i].getElementsByTagName('td')[1].textContent}</td>
                 <td>${inventario[i].getElementsByTagName('td')[2].textContent}</td>
                 <td>${inventario[i].getElementsByTagName('td')[3].textContent}</td>
-                <td>${cantidadDistribuida}</td>
+                <td>${inventario[i].getElementsByTagName('td')[4].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[5].textContent}</td>
+                <td>${cantidad}</td>
                 <td>${codigo}</td>
             `;
+
+            // Actualizar el stock localmente en la sucursal
             sucursal.inventario.push({
-                nombre: inventario[i].getElementsByTagName('td')[0].textContent,
-                descripcion: inventario[i].getElementsByTagName('td')[1].textContent,
-                seccion: inventario[i].getElementsByTagName('td')[2].textContent,
-                precio: inventario[i].getElementsByTagName('td')[3].textContent,
-                stock: cantidadDistribuida,
+                fechaActual: inventario[i].getElementsByTagName('td')[0].textContent,
+                nombre: inventario[i].getElementsByTagName('td')[1].textContent,
+                descripcion: inventario[i].getElementsByTagName('td')[2].textContent,
+                seccion: inventario[i].getElementsByTagName('td')[3].textContent,
+                compra: inventario[i].getElementsByTagName('td')[4].textContent,
+                venta: inventario[i].getElementsByTagName('td')[5].textContent,
+                stock: cantidad,
                 codigo: codigo
             });
-            
-            break;
+
+            // Enviar el producto a la hoja de cálculo
+            enviarProductoSucursal_CUU({
+                fechaActual: inventario[i].getElementsByTagName('td')[0].textContent,
+                nombre: inventario[i].getElementsByTagName('td')[1].textContent,
+                descripcion: inventario[i].getElementsByTagName('td')[2].textContent,
+                seccion: inventario[i].getElementsByTagName('td')[3].textContent,
+                compra: inventario[i].getElementsByTagName('td')[4].textContent,
+                venta: inventario[i].getElementsByTagName('td')[5].textContent,
+                stock: cantidad,
+                codigo: codigo
+            });
+
+            alert(`Se llevaron ${cantidad} unidades del producto con código ${codigo} a la sucursal ${sucursalNombre}`);
+            return; // Salir después de agregar el producto
         }
     }
+
+    alert(`No se encontró ningún producto con el código proporcionado en el inventario.`);
+}
+
+function agregarProductoCredito() {
+    const sucursales = [
+        { nombre: "Credito", tabla: document.getElementById('CreditoTabla'), inventario: [] },
+        // Otras sucursales...
+    ];
+    const sucursalNombre = "Credito";
+    const sucursal = sucursales.find(s => s.nombre === sucursalNombre);
+
+    if (!sucursal) {
+        alert("Sucursal no encontrada.");
+        return;
+    }
+
+    const codigo = prompt(`Ingrese el código del producto a agregar a la sucursal ${sucursalNombre}`);
+
+    const inventario = document.getElementById('inventario').getElementsByTagName('tr');
+
+    for (let i = 1; i < inventario.length; i++) {
+        const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
+
+        if (codigo === codigoProducto) {
+            const cantidadStockAlmacen = parseInt(inventario[i].getElementsByTagName('td')[6].textContent);
+
+            // Preguntar la cantidad de stock a llevar a la sucursal
+            const cantidad = parseInt(prompt(`Ingrese la cantidad de stock a llevar a la sucursal ${sucursalNombre}`));
+
+            if (isNaN(cantidad) || cantidad <= 0 || cantidad > cantidadStockAlmacen) {
+                alert("Cantidad inválida. Asegúrese de ingresar un número mayor que cero y no mayor que el stock disponible en el almacén principal.");
+                return;
+            }
+
+            // Restar la cantidad del stock en el almacén principal
+            inventario[i].getElementsByTagName('td')[6].textContent = cantidadStockAlmacen - cantidad;
+
+            // Agregar el producto a la tabla de la sucursal Sucursal_CUU con la cantidad especificada
+            const tablaSucursal_CUU = document.getElementById('CreditoTabla');
+            const newRow = tablaSucursal_CUU.insertRow();
+            newRow.innerHTML = `
+                <td>${inventario[i].getElementsByTagName('td')[0].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[1].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[2].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[3].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[4].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[5].textContent}</td>
+                <td>${cantidad}</td>
+                <td>${codigo}</td>
+            `;
+
+            // Actualizar el stock localmente en la sucursal
+            sucursal.inventario.push({
+                fechaActual: inventario[i].getElementsByTagName('td')[0].textContent,
+                nombre: inventario[i].getElementsByTagName('td')[1].textContent,
+                descripcion: inventario[i].getElementsByTagName('td')[2].textContent,
+                seccion: inventario[i].getElementsByTagName('td')[3].textContent,
+                compra: inventario[i].getElementsByTagName('td')[4].textContent,
+                venta: inventario[i].getElementsByTagName('td')[5].textContent,
+                stock: cantidad,
+                codigo: codigo
+            });
+
+            // Enviar el producto a la hoja de cálculo
+            enviarProductoCredito({
+                fechaActual: inventario[i].getElementsByTagName('td')[0].textContent,
+                nombre: inventario[i].getElementsByTagName('td')[1].textContent,
+                descripcion: inventario[i].getElementsByTagName('td')[2].textContent,
+                seccion: inventario[i].getElementsByTagName('td')[3].textContent,
+                compra: inventario[i].getElementsByTagName('td')[4].textContent,
+                venta: inventario[i].getElementsByTagName('td')[5].textContent,
+                stock: cantidad,
+                codigo: codigo
+            });
+
+            alert(`Se llevaron ${cantidad} unidades del producto con código ${codigo} a la sucursal ${sucursalNombre}`);
+            return; // Salir después de agregar el producto
+        }
+    }
+
+    alert(`No se encontró ningún producto con el código proporcionado en el inventario.`);
+}
+
+function agregarProductoPrestamo() {
+    const sucursales = [
+        { nombre: "Prestamo", tabla: document.getElementById('PrestamoTabla'), inventario: [] },
+        // Otras sucursales...
+    ];
+    const sucursalNombre = "Prestamo";
+    const sucursal = sucursales.find(s => s.nombre === sucursalNombre);
+
+    if (!sucursal) {
+        alert("Sucursal no encontrada.");
+        return;
+    }
+
+    const codigo = prompt(`Ingrese el código del producto a agregar a la sucursal ${sucursalNombre}`);
+
+    const inventario = document.getElementById('inventario').getElementsByTagName('tr');
+
+    for (let i = 1; i < inventario.length; i++) {
+        const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
+
+        if (codigo === codigoProducto) {
+            const cantidadStockAlmacen = parseInt(inventario[i].getElementsByTagName('td')[6].textContent);
+
+            // Preguntar la cantidad de stock a llevar a la sucursal
+            const cantidad = parseInt(prompt(`Ingrese la cantidad de stock a llevar a la sucursal ${sucursalNombre}`));
+
+            if (isNaN(cantidad) || cantidad <= 0 || cantidad > cantidadStockAlmacen) {
+                alert("Cantidad inválida. Asegúrese de ingresar un número mayor que cero y no mayor que el stock disponible en el almacén principal.");
+                return;
+            }
+
+            // Restar la cantidad del stock en el almacén principal
+            inventario[i].getElementsByTagName('td')[6].textContent = cantidadStockAlmacen - cantidad;
+
+            // Agregar el producto a la tabla de la sucursal Sucursal_CUU con la cantidad especificada
+            const tablaSucursal_CUU = document.getElementById('PrestamoTabla');
+            const newRow = tablaSucursal_CUU.insertRow();
+            newRow.innerHTML = `
+                <td>${inventario[i].getElementsByTagName('td')[0].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[1].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[2].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[3].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[4].textContent}</td>
+                <td>${inventario[i].getElementsByTagName('td')[5].textContent}</td>
+                <td>${cantidad}</td>
+                <td>${codigo}</td>
+            `;
+
+            // Actualizar el stock localmente en la sucursal
+            sucursal.inventario.push({
+                fechaActual: inventario[i].getElementsByTagName('td')[0].textContent,
+                nombre: inventario[i].getElementsByTagName('td')[1].textContent,
+                descripcion: inventario[i].getElementsByTagName('td')[2].textContent,
+                seccion: inventario[i].getElementsByTagName('td')[3].textContent,
+                compra: inventario[i].getElementsByTagName('td')[4].textContent,
+                venta: inventario[i].getElementsByTagName('td')[5].textContent,
+                stock: cantidad,
+                codigo: codigo
+            });
+
+            // Enviar el producto a la hoja de cálculo
+            enviarProductoPrestamo({
+                fechaActual: inventario[i].getElementsByTagName('td')[0].textContent,
+                nombre: inventario[i].getElementsByTagName('td')[1].textContent,
+                descripcion: inventario[i].getElementsByTagName('td')[2].textContent,
+                seccion: inventario[i].getElementsByTagName('td')[3].textContent,
+                compra: inventario[i].getElementsByTagName('td')[4].textContent,
+                venta: inventario[i].getElementsByTagName('td')[5].textContent,
+                stock: cantidad,
+                codigo: codigo
+            });
+
+            alert(`Se llevaron ${cantidad} unidades del producto con código ${codigo} a la sucursal ${sucursalNombre}`);
+            return; // Salir después de agregar el producto
+        }
+    }
+
+    alert(`No se encontró ningún producto con el código proporcionado en el inventario.`);
 }
 
 let productoSeleccionado = null;
@@ -520,10 +1068,10 @@ function distribuirStockSucursal() {
     const inventario = document.getElementById('inventario').getElementsByTagName('tr');
 
     for (let i = 1; i < inventario.length; i++) {
-        const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
+        const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
 
         if (codigo === codigoProducto) {
-            const stockCell = inventario[i].getElementsByTagName('td')[4];
+            const stockCell = inventario[i].getElementsByTagName('td')[6];
             const cantidadDistribuida = Math.min(cantidad, Number(stockCell.textContent));
 
             if (cantidadDistribuida > 0) {
@@ -535,15 +1083,19 @@ function distribuirStockSucursal() {
                     <td>${inventario[i].getElementsByTagName('td')[1].textContent}</td>
                     <td>${inventario[i].getElementsByTagName('td')[2].textContent}</td>
                     <td>${inventario[i].getElementsByTagName('td')[3].textContent}</td>
+                    <td>${inventario[i].getElementsByTagName('td')[4].textContent}</td>
+                    <td>${inventario[i].getElementsByTagName('td')[5].textContent}</td>
                     <td>${cantidadDistribuida}</td>
                     <td>${codigo}</td>
                 `;
 
                 sucursal.inventario.push({
-                    nombre: inventario[i].getElementsByTagName('td')[0].textContent,
-                    descripcion: inventario[i].getElementsByTagName('td')[1].textContent,
-                    seccion: inventario[i].getElementsByTagName('td')[2].textContent,
-                    precio: inventario[i].getElementsByTagName('td')[3].textContent,
+                    fechaActual: inventario[i].getElementsByTagName('td')[0].textContent,
+                    nombre: inventario[i].getElementsByTagName('td')[1].textContent,
+                    descripcion: inventario[i].getElementsByTagName('td')[2].textContent,
+                    seccion: inventario[i].getElementsByTagName('td')[3].textContent,
+                    compra: inventario[i].getElementsByTagName('td')[4].textContent,
+                    venta: inventario[i].getElementsByTagName('td')[5].textContent,
                     stock: cantidadDistribuida,
                     codigo: codigo
                 });
@@ -579,9 +1131,9 @@ function eliminarProductoDeSucursal() {
         // Agregar el producto de vuelta al inventario
         const inventario = document.getElementById('inventario').getElementsByTagName('tr');
         for (let i = 1; i < inventario.length; i++) {
-            const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
+            const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
             if (codigo === codigoProducto) {
-                const stockCell = inventario[i].getElementsByTagName('td')[4];
+                const stockCell = inventario[i].getElementsByTagName('td')[6];
                 stockCell.textContent = Number(stockCell.textContent) + productoEliminado.stock;
                 break;
             }
@@ -590,7 +1142,7 @@ function eliminarProductoDeSucursal() {
         // Eliminar fila correspondiente en la tabla de la sucursal
         const filasTabla = sucursal.tabla.getElementsByTagName('tr');
         for (let i = 1; i < filasTabla.length; i++) {
-            const codigoProducto = filasTabla[i].getElementsByTagName('td')[5].textContent;
+            const codigoProducto = filasTabla[i].getElementsByTagName('td')[7].textContent;
 
             if (codigo === codigoProducto) {
                 filasTabla[i].remove();
@@ -615,9 +1167,9 @@ function agregarPiezasASucursal() {
         if (cantidad > 0) {
             const inventario = document.getElementById('inventario').getElementsByTagName('tr');
             for (let i = 1; i < inventario.length; i++) {
-                const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
+                const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
                 if (codigo === codigoProducto) {
-                    const stockCell = inventario[i].getElementsByTagName('td')[4];
+                    const stockCell = inventario[i].getElementsByTagName('td')[6];
                     if (Number(stockCell.textContent) >= cantidad) {
                         stockCell.textContent = Number(stockCell.textContent) - cantidad;
 
@@ -628,7 +1180,7 @@ function agregarPiezasASucursal() {
                             // Si existe, solo actualizar el stock
                             sucursal.inventario[indiceProducto].stock += cantidad;
                             const filaSucursal = sucursal.tabla.rows[indiceProducto + 1];
-                            filaSucursal.cells[4].textContent = sucursal.inventario[indiceProducto].stock;
+                            filaSucursal.cells[6].textContent = sucursal.inventario[indiceProducto].stock;
                         } else {
                             // Si no existe, agregar una nueva fila
                             const filaSucursal = sucursal.tabla.insertRow();
@@ -637,14 +1189,18 @@ function agregarPiezasASucursal() {
                                 <td>${inventario[i].getElementsByTagName('td')[1].textContent}</td>
                                 <td>${inventario[i].getElementsByTagName('td')[2].textContent}</td>
                                 <td>${inventario[i].getElementsByTagName('td')[3].textContent}</td>
+                                <td>${inventario[i].getElementsByTagName('td')[4].textContent}</td>
+                                <td>${inventario[i].getElementsByTagName('td')[5].textContent}</td>
                                 <td>${cantidad}</td>
                                 <td>${codigo}</td>
                             `;
                             sucursal.inventario.push({
-                                nombre: inventario[i].getElementsByTagName('td')[0].textContent,
-                                descripcion: inventario[i].getElementsByTagName('td')[1].textContent,
-                                seccion: inventario[i].getElementsByTagName('td')[2].textContent,
-                                precio: inventario[i].getElementsByTagName('td')[3].textContent,
+                                fechaActual: inventario[i].getElementsByTagName('td')[0].textContent,
+                                nombre: inventario[i].getElementsByTagName('td')[1].textContent,
+                                descripcion: inventario[i].getElementsByTagName('td')[2].textContent,
+                                seccion: inventario[i].getElementsByTagName('td')[3].textContent,
+                                compra: inventario[i].getElementsByTagName('td')[4].textContent,
+                                venta: inventario[i].getElementsByTagName('td')[5].textContent,
                                 stock: cantidad,
                                 codigo: codigo
                             });
@@ -678,9 +1234,9 @@ function restarPiezasDeSucursal() {
         if (cantidad > 0) {
             const inventario = sucursal.tabla.getElementsByTagName('tr');
             for (let i = 1; i < inventario.length; i++) {
-                const codigoProducto = inventario[i].getElementsByTagName('td')[5].textContent;
+                const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
                 if (codigo === codigoProducto) {
-                    const stockCell = inventario[i].getElementsByTagName('td')[4];
+                    const stockCell = inventario[i].getElementsByTagName('td')[6];
                     if (Number(stockCell.textContent) >= cantidad) {
                         stockCell.textContent = Number(stockCell.textContent) - cantidad;
 
@@ -689,7 +1245,7 @@ function restarPiezasDeSucursal() {
                         if (indiceProducto !== -1) {
                             sucursal.inventario[indiceProducto].stock -= cantidad;
                             const filaSucursal = sucursal.tabla.rows[indiceProducto + 1];
-                            filaSucursal.cells[4].textContent = sucursal.inventario[indiceProducto].stock;
+                            filaSucursal.cells[5].textContent = sucursal.inventario[indiceProducto].stock;
 
                             // Mostrar alerta de éxito
                             alert(`Se restaron ${cantidad} piezas de la sucursal ${sucursal.nombre}.`);
@@ -737,10 +1293,12 @@ async function cargarProductosEnTabla() {
     productos.forEach(producto => {
         const newRow = document.createElement('tr');
         newRow.innerHTML = `
+            <td>${producto.Fecha}</td>
             <td>${producto.Nombre}</td>
             <td>${producto.Descripción}</td>
             <td>${producto.Sección}</td>
-            <td>${producto.Precio}</td>
+            <td>${producto.Compra}</td>
+            <td>${producto.Venta}</td>
             <td>${producto.Stock}</td>
             <td>${producto.Código}</td>
         `;

@@ -48,22 +48,24 @@
 
     <!-- ... (Por Borrar) ... -->
 
-    <div id="InventarioSTab" class="contenido-tab">
-
+    <div id="InventarioTab" class="tab-container contenido-tab">
         <h1>Almacén</h1>
     <table id="inventario">
         <tr>
+            <th>Fecha</th>
             <th>Nombre</th>
             <th>Descripción</th>
             <th>Sección</th>
-            <th>Precio</th>
+            <th>Compra</th>
+            <th>Venta</th>
             <th>Stock</th>
             <th>Código</th>
         </tr>
     </table>
     </div>
-
     <!-- ... (Por Borrar) ... -->
+
+
 
     <!-- ... (Añadir Sucursales) ... -->
     <div id="AñadirSTab" class="add-container contenido-tab" style="display:none;">
@@ -79,6 +81,60 @@
     <!-- ... (Sucursales) ... -->
     <div id="SucursalesTab" class="suc-container contenido-tab" style="display:none;">
         <h1>Sucursales</h1>
+            <div id="sucursalSucursal_CUUContenido">
+                <h2>Sucursal: Sucursal CUU</h2>
+                <!-- Agrega el ID específico para la tabla de Sucursal_CUU -->
+                <table id="Sucursal_CUUTabla">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Sección</th>
+                        <th>Compra</th>
+                        <th>Venta</th>
+                        <th>Stock</th>
+                        <th>Código</th>
+                    </tr>
+                </table>
+                <button class="boton-secundario" type="button" onclick="agregarProductoSucursal_CUU()">Distribuir Stock</button>
+            </div>
+
+            <div id="sucursalCreditoContenido">
+                <h2>Sucursal: Crédito</h2>
+                <!-- Agrega el ID específico para la tabla de Sucursal_CUU -->
+                <table id="CreditoTabla">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Sección</th>
+                        <th>Compra</th>
+                        <th>Venta</th>
+                        <th>Stock</th>
+                        <th>Código</th>
+                    </tr>
+                </table>
+                <button class="boton-secundario" type="button" onclick="agregarProductoCredito()">Distribuir Stock</button>
+            </div>
+
+            <div id="sucursalPrestamoContenido">
+                <h2>Sucursal: Prestamo</h2>
+                <!-- Agrega el ID específico para la tabla de Sucursal_CUU -->
+                <table id="PrestamoTabla">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Sección</th>
+                        <th>Compra</th>
+                        <th>Venta</th>
+                        <th>Stock</th>
+                        <th>Código</th>
+                    </tr>
+                </table>
+                <button class="boton-secundario" type="button" onclick="agregarProductoPrestamo()">Distribuir Stock</button>
+            </div>
+
         <div id="sucursalesContenido"></div>
     </div>
     <!-- ... (Sucursales) ... -->
