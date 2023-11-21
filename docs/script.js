@@ -321,7 +321,6 @@ function confirmarModificacion() {
             const codigoProducto = inventario[i].getElementsByTagName('td')[7].textContent;
 
             if (productoSeleccionado2.codigo === codigoProducto) {
-                inventario[i].getElementsByTagName('td')[0].textContent = document.getElementById('fechaActualMod').value;
                 inventario[i].getElementsByTagName('td')[1].textContent = document.getElementById('nombreMod').value;
                 inventario[i].getElementsByTagName('td')[2].textContent = document.getElementById('descripcionMod').value;
                 inventario[i].getElementsByTagName('td')[3].textContent = document.getElementById('seccionMod').value;
@@ -330,7 +329,6 @@ function confirmarModificacion() {
                 inventario[i].getElementsByTagName('td')[6].textContent = document.getElementById('stockMod').value;
 
                 // Actualizar el producto seleccionado
-                productoSeleccionado2.fechaActual = document.getElementById('fechaActualMod').value;
                 productoSeleccionado2.nombre = document.getElementById('nombreMod').value;
                 productoSeleccionado2.descripcion = document.getElementById('descripcionMod').value;
                 productoSeleccionado2.seccion = document.getElementById('seccionMod').value;
