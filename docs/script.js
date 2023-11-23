@@ -4,10 +4,10 @@ function validarFormulario(event) {
     var usuario = document.getElementById("usuario").value;
     var contrasena = document.getElementById("contrasena").value;
 
-    if (usuario === "OM-Ampersand" && contrasena === "OModa124*") {
+    if (usuario === "OM-Ampersand" && contrasena === "OModa125*") {
         // Redirigir a la segunda ventana
         window.location.href = "bienvenido.html";
-    } else if (usuario === "JugueteriaEureka" && contrasena === "Eureka124*") {
+    } else if (usuario === "JugueteriaEureka" && contrasena === "Eureka125*") {
         // Hacer algo si el usuario y contraseña son diferentes
         window.location.href = "https://jugueteriaeureka.github.io/bienvenido.html";
     } else {
